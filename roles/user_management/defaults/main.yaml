@@ -1,0 +1,25 @@
+---
+# Default variables
+users:
+  # Example structure:
+  - username: john
+    comment: John Doe
+    shell: /bin/bash
+    groups: ['developers', 'docker']
+    ssh_key: "ssh-rsa AAAA..."
+    state: present
+
+groups_list:
+  # Example structure:
+  - name: developers
+    gid: 1001
+    state: present
+  - name: docker
+    gid: 1002
+    state: present
+
+# Whether to remove home directory when removing users
+remove_home: true
+
+# Default shell for new users
+default_shell: /bin/bash

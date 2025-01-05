@@ -1,0 +1,54 @@
+---
+- name: Get OS family
+  ansible.builtin.setup:
+    filter: ansible_os_family
+  register: os_family
+
+- name: Update apt cache (Debian/Ubuntu)
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  when: os_family.ansible_facts.ansible_os_family == "Debian"
+
+- name: Upgrade all packages (Debian/Ubuntu)
+  ansible.builtin.apt:
+    upgrade: dist
+    autoremove: yes
+    autoclean: yes
+  when: os_family.ansible_facts.ansible_os_family == "Debian"
+  register: apt_upgrade
+  notify: reboot_if_needed
+
+- name: Update yum cache (RedHat/CentOS)
+  ansible.builtin.yum:
+    update_cache: yes
+  when: os_family.ansible_facts.ansible_os_family == "RedHat"
+
+- name: Upgrade all packages (RedHat/CentOS)
+  ansible.builtin.yum:
+    name: '*'
+    state: latest
+    update_only: "{{ update_security_packages_only | default(false) }}"
+  when: os_family.ansible_facts.ansible_os_family == "RedHat"
+  register: yum_upgrade
+  notify: reboot_if_needed
+
+- name: Check if reboot is required (Debian/Ubuntu)
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  register: reboot_required_file
+  when: os_family.ansible_facts.ansible_os_family == "Debian"
+
+- name: Set reboot fact (Debian/Ubuntu)
+  ansible.builtin.set_fact:
+    reboot_required: true
+  when: 
+    - os_family.ansible_facts.ansible_os_family == "Debian"
+    - reboot_required_file.stat.exists
+
+- name: Set reboot fact (RedHat/CentOS)
+  ansible.builtin.set_fact:
+    reboot_required: true
+  when:
+    - os_family.ansible_facts.ansible_os_family == "RedHat"
+    - yum_upgrade.changed

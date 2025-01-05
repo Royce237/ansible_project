@@ -1,0 +1,6 @@
+---
+# Whether to only install security updates (RedHat/CentOS only)
+update_security_packages_only: false
+
+# Whether to automatically reboot after package installation if required
+auto_reboot: false

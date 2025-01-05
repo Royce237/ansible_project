@@ -1,0 +1,46 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+  
+  vars:
+    # Group definitions
+    groups_list:
+      - name: operations
+        gid: 2003
+        state: present
+      - name: support
+        gid: 2004
+        state: present
+        
+    # User definitions
+    users:
+      - username: sam
+        comment: "Alex Developer"
+        shell: /bin/bash
+        groups: ['developers']
+        ssh_key: "ssh-rsa AAAA... alex@company.com"
+        
+      - username: sarah
+        comment: "Sarah Operations"
+        shell: /bin/bash
+        groups: ['operations', 'developers']
+        ssh_key: "ssh-rsa AAAA... sarah@company.com"
+        
+      - username: mike
+        comment: "Mike Support"
+        shell: /bin/bash
+        groups: ['support']
+        ssh_key: "ssh-rsa AAAA... mike@company.com"
+        
+      # Example of removing a user
+      - username: olduser
+        state: absent
+        
+    # Role configuration
+    remove_home: true
+    default_shell: /bin/bash
+        
+  roles:
+    - role: ../roles/user_management
+      tags: user_management
