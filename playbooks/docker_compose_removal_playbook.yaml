@@ -1,0 +1,6 @@
+- hosts: all
+  become: yes  # This enables sudo privileges
+  become_method: sudo
+  roles:
+    - ../roles/docker_compose_removal
+    

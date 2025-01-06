@@ -1,0 +1,45 @@
+---
+- name: Install Nginx
+  ansible.builtin.package:
+    name: nginx
+    state: present
+
+- name: Create document root
+  ansible.builtin.file:
+    path: "{{ webserver_document_root }}"
+    state: directory
+    mode: '0755'
+
+- name: Configure Nginx
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    mode: '0644'
+  notify: restart nginx
+
+- name: Configure default site
+  ansible.builtin.template:
+    src: nginx-default-site.conf.j2
+    dest: /etc/nginx/sites-available/default
+    mode: '0644'
+  notify: restart nginx
+
+- name: Create default index page
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: "{{ webserver_document_root }}/index.html"
+    mode: '0644'
+  when: default_page_enabled
+
+- name: Ensure Apache service is stopped
+  ansible.builtin.service:
+    name: "{{ apache_service }}"
+    state: stopped
+  vars:
+    apache_service: "{{ 'apache2' if ansible_os_family == 'Debian' else 'httpd' }}"
+    
+- name: Start and enable Nginx
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: yes

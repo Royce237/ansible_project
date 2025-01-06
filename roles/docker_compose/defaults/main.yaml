@@ -1,0 +1,3 @@
+# roles/docker_compose/defaults/main.yml
+---
+docker_compose_version_to_install: "v2.24.5"

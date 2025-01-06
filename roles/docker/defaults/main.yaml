@@ -1,0 +1,16 @@
+# roles/docker/defaults/main.yml
+---
+# User to be added to docker group
+docker_user: "ubuntu"
+
+# Whether to install Python Docker package
+install_python_docker: true
+
+# Docker daemon configuration options
+docker_daemon_options:
+  # Example configuration:
+  storage-driver: "overlay2"
+  log-driver: "json-file"
+  log-opts:
+    max-size: "10m"
+    max-file: "3"

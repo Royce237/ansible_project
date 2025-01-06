@@ -1,0 +1,63 @@
+# roles/jenkins/tasks/main.yml
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  become: true
+
+- name: Install Java
+  apt:
+    name: "{{ java_package }}"
+    state: present
+  become: true
+
+- name: Download Jenkins GPG key
+  ansible.builtin.shell: |
+    wget -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+  args:
+    _uses_shell: true
+  become: true
+
+- name: Add Jenkins repository
+  ansible.builtin.shell: |
+    echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" | tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+  args:
+    _uses_shell: true
+  become: true
+
+- name: Update apt cache with apt-get
+  ansible.builtin.shell: apt-get update
+  args:
+    _uses_shell: true
+  become: true
+
+- name: Install Jenkins with apt-get
+  ansible.builtin.shell: apt-get install -y jenkins
+  args:
+    _uses_shell: true
+  become: true
+  notify: restart jenkins
+  
+- name: Create Jenkins user
+  user:
+    name: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    home: "{{ jenkins_home }}"
+    shell: /bin/bash
+  become: true
+
+- name: Set Jenkins home directory permissions
+  file:
+    path: "{{ jenkins_home }}"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: '0755'
+  become: true
+
+- name: Ensure Jenkins is running
+  service:
+    name: jenkins
+    state: started
+    enabled: yes
+  become: true

@@ -1,0 +1,27 @@
+---
+# Web server selection
+webserver_type: nginx  # Options: 'nginx' or 'apache'
+
+# Common settings
+webserver_port: 80
+ssl_enabled: false
+ssl_port: 443
+
+# Document root settings
+webserver_document_root: /var/www/html
+default_page_enabled: true
+default_page_content: "Welcome to {{ ansible_hostname }}"
+
+# Nginx specific settings
+nginx_worker_processes: auto
+nginx_worker_connections: 1024
+nginx_keepalive_timeout: 65
+nginx_client_max_body_size: "1m"
+
+# Apache specific settings
+apache_mods_enabled:
+  - rewrite
+  - ssl
+apache_mods_disabled: []
+apache_keepalive: "On"
+apache_keepalive_timeout: 60

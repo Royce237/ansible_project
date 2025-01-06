@@ -1,0 +1,7 @@
+# Set to false to skip stopping running services
+stop_running_services: true
+
+# List of paths where docker-compose projects exist
+# docker_compose_project_paths:
+#   - /path/to/project1
+#   - /path/to/project2

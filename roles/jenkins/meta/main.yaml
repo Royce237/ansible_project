@@ -1,0 +1,19 @@
+# roles/jenkins/meta/main.yml
+---
+galaxy_info:
+  author: Your Name
+  description: Jenkins installation and configuration
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+  galaxy_tags:
+    - jenkins
+    - ci
+    - cd
+dependencies: []

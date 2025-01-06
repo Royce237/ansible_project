@@ -1,0 +1,14 @@
+---
+- hosts: webservers
+  become: yes
+  become_method: sudo
+
+  vars:
+    webserver_type: nginx  # or 'apache'
+    webserver_port: 80
+    default_page_content: "Welcome to our web server!"
+    nginx_worker_processes: 4
+    nginx_client_max_body_size: "10m"
+
+  roles:
+    - role: ../roles/webserver

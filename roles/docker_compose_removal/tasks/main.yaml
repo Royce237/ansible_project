@@ -1,0 +1,53 @@
+---
+- name: Check if Docker Compose binary exists in /usr/local/bin
+  stat:
+    path: /usr/local/bin/docker-compose
+  register: local_binary
+
+- name: Check if Docker Compose binary exists in /usr/bin
+  stat:
+    path: /usr/bin/docker-compose
+  register: usr_binary
+
+- name: Stop running Docker Compose services
+  shell: |
+    if command -v docker-compose >/dev/null 2>&1; then
+      cd "{{ item }}"
+      docker-compose down
+    fi
+  with_items: "{{ docker_compose_project_paths | default([]) }}"
+  ignore_errors: yes
+  when: stop_running_services | default(true)
+  become: true
+
+- name: Remove Docker Compose binary from /usr/local/bin
+  file:
+    path: /usr/local/bin/docker-compose
+    state: absent
+  when: local_binary.stat.exists
+  become: true
+
+- name: Remove Docker Compose symbolic link from /usr/bin
+  file:
+    path: /usr/bin/docker-compose
+    state: absent
+  when: usr_binary.stat.exists
+  become: true
+
+- name: Remove Docker Compose completion scripts
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /etc/bash_completion.d/docker-compose
+    - /usr/share/bash-completion/completions/docker-compose
+    - /usr/share/zsh/vendor-completions/_docker-compose
+  ignore_errors: yes
+  become: true
+
+- name: Verify Docker Compose is removed
+  command: which docker-compose
+  register: verify_removal
+  failed_when: verify_removal.rc == 0
+  changed_when: false
+  ignore_errors: yes

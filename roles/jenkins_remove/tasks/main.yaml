@@ -1,0 +1,35 @@
+---
+# Remove Jenkins package
+- name: Ensure Jenkins is removed
+  ansible.builtin.apt:
+    name: jenkins
+    state: absent
+  become: true
+
+# Remove Jenkins repository
+- name: Remove Jenkins repository file
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/jenkins.list
+    state: absent
+  become: true
+
+# Remove Jenkins GPG key
+- name: Remove Jenkins GPG key
+  ansible.builtin.file:
+    path: /usr/share/keyrings/jenkins-keyring.asc
+    state: absent
+  become: true
+
+# Clean up Jenkins configuration and data
+- name: Remove Jenkins configuration and data
+  ansible.builtin.file:
+    path: /var/lib/jenkins
+    state: absent
+  become: true
+
+# Update apt cache
+- name: Update apt cache after removing Jenkins
+  ansible.builtin.shell: apt-get update
+  args:
+    _uses_shell: true
+  become: true
