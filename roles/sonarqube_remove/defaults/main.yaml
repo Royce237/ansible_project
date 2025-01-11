@@ -1,0 +1,27 @@
+---
+# SonarQube version and port configuration
+sonarqube_version: "9.9-community"
+sonarqube_port: 9000
+sonarqube_data_dir: "/opt/sonarqube/data"
+sonarqube_extensions_dir: "/opt/sonarqube/extensions"
+sonarqube_logs_dir: "/opt/sonarqube/logs"
+sonarqube_temp_dir: "/opt/sonarqube/temp"
+
+# Database configuration
+postgres_version: "15"
+postgres_port: 5432
+postgres_data_dir: "/opt/postgresql/data"
+postgres_password: "sonar"
+postgres_user: "sonar"
+postgres_db: "sonar"
+
+# Docker network configuration
+docker_network_name: "sonarqube-network"
+
+# System limits
+sonarqube_max_map_count: 524288
+sonarqube_fs_file_max: 131072
+
+# User configuration
+sonarqube_user_id: 1015
+sonarqube_group_id: 1015

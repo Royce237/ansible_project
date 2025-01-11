@@ -1,0 +1,39 @@
+# roles/database-containers/defaults/main.yml
+---
+# MySQL Configuration
+mysql_root_password: "mysqlrootpass"
+mysql_database: "myapp_db"
+mysql_user: "myapp_user"
+mysql_password: "myapp_pass"
+mysql_port: "3306"
+mysql_version: "8.0"
+
+# PostgreSQL Configuration
+postgres_user: "postgres"
+postgres_password: "postgrespass"
+postgres_database: "postgres_db"
+postgres_port: "5432"
+postgres_version: "15"
+
+# MongoDB Configuration
+mongo_root_username: "mongodb"
+mongo_root_password: "mongopass"
+mongo_port: "27017"
+mongo_version: "6.0"
+
+# Redis Configuration
+redis_password: "redispass"
+redis_port: "6379"
+redis_version: "7"
+
+# pgAdmin Configuration
+pgadmin_email: "admin@example.com"
+pgadmin_password: "pgadminpass"
+pgadmin_port: "5050"
+pgadmin_version: "7"
+
+# Docker network name
+docker_network_name: "database_network"
+
+# Data persistence
+data_directory: "/opt/docker/data"

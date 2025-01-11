@@ -1,0 +1,31 @@
+# roles/database-containers/handlers/main.yml
+---
+- name: restart mysql
+  community.docker.docker_container:
+    name: mysql
+    state: started
+    restart: yes
+
+- name: restart postgres
+  community.docker.docker_container:
+    name: postgres
+    state: started
+    restart: yes
+
+- name: restart mongodb
+  community.docker.docker_container:
+    name: mongodb
+    state: started
+    restart: yes
+
+- name: restart redis
+  community.docker.docker_container:
+    name: redis
+    state: started
+    restart: yes
+
+- name: restart pgadmin
+  community.docker.docker_container:
+    name: pgadmin
+    state: started
+    restart: yes

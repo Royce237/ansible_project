@@ -1,0 +1,71 @@
+# roles/sonarqube_remove/tasks/main.yml
+---
+- name: Stop and remove SonarQube container
+  docker_container:
+    name: sonarqube
+    state: absent
+    force_kill: yes
+  become: true
+  ignore_errors: true
+
+- name: Stop and remove PostgreSQL container
+  docker_container:
+    name: sonarqube-db
+    state: absent
+    force_kill: yes
+  become: true
+  ignore_errors: true
+
+- name: Remove Docker network
+  docker_network:
+    name: "{{ docker_network_name }}"
+    state: absent
+  become: true
+  ignore_errors: true
+
+- name: Remove data directories
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ sonarqube_data_dir }}"
+    - "{{ sonarqube_extensions_dir }}"
+    - "{{ sonarqube_logs_dir }}"
+    - "{{ sonarqube_temp_dir }}"
+    - "{{ postgres_data_dir }}"
+  become: true
+  ignore_errors: true
+
+- name: Remove sonarqube user
+  user:
+    name: sonarqube
+    state: absent
+    remove: yes
+  become: true
+  ignore_errors: true
+
+- name: Remove sonarqube group
+  group:
+    name: sonarqube
+    state: absent
+  become: true
+  ignore_errors: true
+
+- name: Remove sonarqube limits configuration
+  file:
+    path: /etc/security/limits.d/99-sonarqube.conf
+    state: absent
+  become: true
+  ignore_errors: true
+
+- name: Reset sysctl values
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: absent
+    reload: yes
+  with_items:
+    - { name: 'fs.file-max', value: '65536' }
+    - { name: 'vm.max_map_count', value: '262144' }
+  become: true
+  ignore_errors: true

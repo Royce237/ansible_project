@@ -1,0 +1,27 @@
+# roles/dev_packages/defaults/main.yml
+---
+# Package versions/states
+nodejs_version: "20.x"  # LTS version
+java_version: "17"      # Default Java version
+go_version: "1.21"      # Go version
+python_version: "3"     # Python version
+
+# AWS CLI version
+aws_cli_version: "2"
+
+# Kubernetes tools versions
+kubectl_version: "1.29.0"
+helm_version: "3.14.0"
+
+# k8s Installation flags
+install_kubectl: true
+install_helm: true
+install_kubens: true
+
+
+# Package installation flags
+install_nodejs: true
+install_java: true
+install_maven: true
+install_go: true
+install_awscli: true

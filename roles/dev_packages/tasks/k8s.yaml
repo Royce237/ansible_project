@@ -1,0 +1,49 @@
+# roles/dev_packages/tasks/k8s.yaml
+---
+- name: Download kubectl binary
+  ansible.builtin.get_url:
+    url: "https://dl.k8s.io/release/v{{ kubectl_version }}/bin/linux/amd64/kubectl"
+    dest: /usr/local/bin/kubectl
+    mode: '0755'
+  when: install_kubectl
+
+- name: Download and install Helm
+  ansible.builtin.shell: |
+    curl -fsSL https://get.helm.sh/helm-v{{ helm_version }}-linux-amd64.tar.gz -o helm.tar.gz
+    tar -zxvf helm.tar.gz
+    mv linux-amd64/helm /usr/local/bin/helm
+    rm -rf linux-amd64 helm.tar.gz
+  args:
+    creates: /usr/local/bin/helm
+  when: install_helm
+
+- name: Install kubectx (includes kubens)
+  ansible.builtin.git:
+    repo: https://github.com/ahmetb/kubectx
+    dest: /opt/kubectx
+    version: master
+  when: install_kubens
+
+- name: Create symbolic links for kubens
+  ansible.builtin.file:
+    src: "/opt/kubectx/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    state: link
+  with_items:
+    - kubens
+    - kubectx
+  when: install_kubens
+
+- name: Verify Kubernetes tools installations
+  ansible.builtin.command: "{{ item }}"
+  register: k8s_tools_version
+  changed_when: false
+  failed_when: false
+  with_items:
+    - kubectl version --client
+    - helm version
+    - kubens --version
+  
+- name: Display installed K8s tools versions
+  ansible.builtin.debug:
+    msg: "{{ k8s_tools_version.results | map(attribute='stdout') | list }}"

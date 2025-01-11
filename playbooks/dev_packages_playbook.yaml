@@ -1,0 +1,12 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+
+  # vars:
+  #   nodejs_version: "20.x"
+  #   java_version: "17"
+  #   go_version: "1.21"
+
+  roles:
+    - role: ../roles/dev_packages

@@ -1,0 +1,8 @@
+# ---
+# # Include existing tasks first
+# - name: Install base packages
+#   ansible.builtin.import_tasks: base_packages.yaml
+
+# Add new task for Kubernetes tools
+- name: Install Kubernetes tools
+  ansible.builtin.import_tasks: k8s.yaml

@@ -1,0 +1,94 @@
+# roles/dev_packages/tasks/base_packages.yaml
+---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
+
+- name: Install common packages
+  ansible.builtin.package:
+    name:
+      - curl
+      - git
+      - gnupg
+      - jq
+      - openssh-client
+      - python3
+      - vim
+      - wget
+      - python3-pip
+      - net-tools
+      - iputils-ping
+    state: present
+
+- name: Add NodeJS repository
+  ansible.builtin.shell: |
+    curl -fsSL https://deb.nodesource.com/setup_{{ nodejs_version }} | bash -
+  args:
+    creates: /etc/apt/sources.list.d/nodesource.list
+  when: install_nodejs and ansible_os_family == "Debian"
+
+- name: Install NodeJS and NPM
+  ansible.builtin.package:
+    name: nodejs
+    state: present
+  when: install_nodejs
+
+- name: Install Java
+  ansible.builtin.package:
+    name: "openjdk-{{ java_version }}-jdk"
+    state: present
+  when: install_java and ansible_os_family == "Debian"
+
+- name: Install Maven
+  ansible.builtin.package:
+    name: maven
+    state: present
+  when: install_maven
+
+- name: Download and install AWS CLI v2
+  ansible.builtin.shell: |
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip -o awscliv2.zip
+    ./aws/install --update
+    rm -rf aws awscliv2.zip
+  args:
+    creates: /usr/local/bin/aws
+  when: install_awscli
+
+- name: Download and install Go
+  ansible.builtin.shell: |
+    curl -OL "https://golang.org/dl/go{{ go_version }}.linux-amd64.tar.gz"
+    rm -rf /usr/local/go
+    tar -C /usr/local -xzf go{{ go_version }}.linux-amd64.tar.gz
+    rm go{{ go_version }}.linux-amd64.tar.gz
+  args:
+    creates: /usr/local/go/bin/go
+  when: install_go
+
+- name: Add Go to PATH
+  ansible.builtin.lineinfile:
+    path: /etc/profile.d/go.sh
+    line: 'export PATH=$PATH:/usr/local/go/bin'
+    create: yes
+    mode: '0644'
+  when: install_go
+
+- name: Verify installations
+  ansible.builtin.command: "{{ item }}"
+  register: version_check
+  changed_when: false
+  failed_when: false
+  with_items:
+    - python3 --version
+    - node --version
+    - npm --version
+    - java -version
+    - mvn --version
+    - go version
+    - aws --version
+  
+- name: Display installed versions
+  ansible.builtin.debug:
+    msg: "{{ version_check.results | map(attribute='stdout') | list }}"

@@ -1,0 +1,91 @@
+# roles/database-containers/tasks/main.yml
+---
+- name: Create Docker network
+  community.docker.docker_network:
+    name: "{{ docker_network_name }}"
+    state: present
+
+- name: Ensure data directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  with_items:
+    - "{{ data_directory }}/mysql"
+    - "{{ data_directory }}/postgres"
+    - "{{ data_directory }}/mongodb"
+    - "{{ data_directory }}/redis"
+
+- name: Deploy MySQL container
+  community.docker.docker_container:
+    name: mysql
+    image: "mysql:{{ mysql_version }}"
+    state: started
+    restart_policy: always
+    network_mode: "{{ docker_network_name }}"
+    env:
+      MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
+      MYSQL_DATABASE: "{{ mysql_database }}"
+      MYSQL_USER: "{{ mysql_user }}"
+      MYSQL_PASSWORD: "{{ mysql_password }}"
+    volumes:
+      - "{{ data_directory }}/mysql:/var/lib/mysql"
+    ports:
+      - "{{ mysql_port }}:3306"
+
+- name: Deploy PostgreSQL container
+  community.docker.docker_container:
+    name: postgres
+    image: "postgres:{{ postgres_version }}"
+    state: started
+    restart_policy: always
+    network_mode: "{{ docker_network_name }}"
+    env:
+      POSTGRES_USER: "{{ postgres_user }}"
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+      POSTGRES_DB: "{{ postgres_database }}"
+    volumes:
+      - "{{ data_directory }}/postgres:/var/lib/postgresql/data"
+    ports:
+      - "{{ postgres_port }}:5432"
+
+- name: Deploy MongoDB container
+  community.docker.docker_container:
+    name: mongodb
+    image: "mongo:{{ mongo_version }}"
+    state: started
+    restart_policy: always
+    network_mode: "{{ docker_network_name }}"
+    env:
+      MONGO_INITDB_ROOT_USERNAME: "{{ mongo_root_username }}"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ mongo_root_password }}"
+    volumes:
+      - "{{ data_directory }}/mongodb:/data/db"
+    ports:
+      - "{{ mongo_port }}:27017"
+
+- name: Deploy Redis container
+  community.docker.docker_container:
+    name: redis
+    image: "redis:{{ redis_version }}"
+    state: started
+    restart_policy: always
+    network_mode: "{{ docker_network_name }}"
+    command: redis-server --requirepass {{ redis_password }}
+    volumes:
+      - "{{ data_directory }}/redis:/data"
+    ports:
+      - "{{ redis_port }}:6379"
+
+- name: Deploy pgAdmin container
+  community.docker.docker_container:
+    name: pgadmin
+    image: "dpage/pgadmin4:{{ pgadmin_version }}"
+    state: started
+    restart_policy: always
+    network_mode: "{{ docker_network_name }}"
+    env:
+      PGADMIN_DEFAULT_EMAIL: "{{ pgadmin_email }}"
+      PGADMIN_DEFAULT_PASSWORD: "{{ pgadmin_password }}"
+    ports:
+      - "{{ pgadmin_port }}:80"

@@ -1,0 +1,6 @@
+# roles/dev_packages/handlers/main.yml
+---
+- name: update path
+  ansible.builtin.shell: source /etc/profile.d/go.sh
+  args:
+    executable: /bin/bash

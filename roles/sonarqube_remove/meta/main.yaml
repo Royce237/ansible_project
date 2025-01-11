@@ -1,0 +1,35 @@
+dependencies: []
+galaxy_info:
+  author: Keuleu Royce
+  description: Ansible role to deploy SonarQube with Docker
+  company: EK-Tech
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+  galaxy_tags:
+    - sonarqube
+    - docker
+    - continuous_integration
+
+# # Ansible Role: SonarQube
+
+# This Ansible role deploys SonarQube using Docker containers. It includes:
+# - PostgreSQL database container
+# - SonarQube container
+# - Proper volume mapping for persistence
+# - Network configuration
+# - System requirements setup
+
+# ## Requirements
+
+# - Docker
+# - Docker Python SDK (for Ansible Docker modules)
+# - Ansible 2.9 or higher
+
+# ## Role Variables
+
+# See defaults/main.yml for all available variables and their default values.

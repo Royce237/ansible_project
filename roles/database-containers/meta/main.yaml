@@ -1,0 +1,24 @@
+---
+# roles/database-containers/meta/main.yml
+galaxy_info:
+  author: Royce
+  description: Role to deploy containerized databases
+  company: Ek-TECK
+  license: MIT
+  min_ansible_version: 2.10
+  platforms:
+    - name: EL
+      versions:
+        - 8
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+  galaxy_tags:
+    - database
+    - docker
+    - mysql
+    - postgresql
+    - mongodb
+    - redis
+
